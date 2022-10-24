@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
 # Listen for traffic on the PiKrellCam multicast group and print all lines.
 # Run this in a terminal for debugging multicast traffic.
@@ -17,4 +17,4 @@ mreq = struct.pack("4sl", socket.inet_aton(PKC_MULTICAST_GROUP_IP), socket.INADD
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:
-	print sock.recv(1024)
+	print(sock.recv(1024).decode())

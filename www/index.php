@@ -76,46 +76,53 @@ function time_lapse_period()
 	}
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?php echo TITLE_STRING; ?></title>
 
-  <script src="js-css/jquery.min.js"></script>
+  <link rel="stylesheet" href="js-css/jquery-ui.theme.min.css" />
   <link rel="stylesheet" href="js-css/pikrellcam.css" />
+  <script src="js-css/jquery-3.6.1.min.js"></script>
+  <script src="js-css/jquery-ui.min.js"></script>
   <script src="js-css/pikrellcam.js"></script>
-  <script src="js-css/expandable-panels.js"></script>
-  <link rel="stylesheet" href="js-css/expandable-panels.css" />
+  <script>
+  $( function() {
+    $( "#accordion" ).accordion();
+  } );
+  </script>
 </head>
 
 <?php
-	if (isset($_GET["hide_audio"]))
-		{
+	if (isset($_GET["hide_audio"]))	{
 		$show_audio_controls = "no";
 		config_user_save();
-		}
-	if (isset($_GET["show_audio"]))
-		{
+	}
+	if (isset($_GET["show_audio"])) {
 		$show_audio_controls = "yes";
 		config_user_save();
-		}
+	}
+?>
 
-	echo "<body background=\"$background_image\" onload=\"mjpeg_start();\">";
-    echo "<div class=\"text-center\">";
-        echo "<div class='text-shadow-large'>";
-        echo TITLE_STRING;
-        echo "</div></div>";
-    echo "<div class=\"text-center\" style=\"color: $default_text_color; font-size: 1.4em;\">";
-    echo "<img id=\"mjpeg_image\"
-          alt=\"No preview jpeg. Is pikrellcam running?  Click: System->Start\"
-          style=\"border:4px groove silver;\"
-          onclick=\"image_expand_toggle();\"
-        ></div>";
+<body onload="mjpeg_start();">
+   <div class="text-center">
+   <div class="text-shadow-large">
+      <?php echo TITLE_STRING; ?>
+   </div>
+   </div>
+   <div class="text-center">
+   <img id="mjpeg_image"
+          alt="No preview jpeg. Is pikrellcam running?  Click: System->Start"
+          style="border:4px groove silver;"
+          onclick="image_expand_toggle();">
+   </div>
 
-echo "<div class=\"text-center top-margin\">";
+<div class="text-center top-margin">
 
+<?php
 if (defined('SHOW_AUDIO_CONTROLS'))
 	{
 	if ($show_audio_controls == "yes")
@@ -125,50 +132,62 @@ if (defined('SHOW_AUDIO_CONTROLS'))
 			MP3 not supported </audio>";
 
 		echo "<input type=\"image\" src=\"images/audio-stop.png\"
-			style=\"vertical-align: bottom; margin-left:0px;\"
+			class=\"ui-button ui-widget ui-corner-all\"
+      style=\"vertical-align: bottom; margin-left:3px;\"
 			onclick=\"audio_stop()\"
 			width=\"18\" height=\"28\">";
 		echo "<input type=\"image\" src=\"images/audio-play.png\"
-			style=\"vertical-align: bottom; margin-left:3px;\"
-		onclick=\"audio_play()\"
+			class=\"ui-button ui-widget ui-corner-all\"
+      style=\"vertical-align: bottom; margin-left:3px;\"
+		  onclick=\"audio_play()\"
 			width=\"18\" height=\"28\">";
 		echo "<input type=\"image\" src=\"images/mic.png\"
-			style=\"vertical-align: bottom; margin-left:10px;\"
+			class=\"ui-button ui-widget ui-corner-all\"
+      style=\"vertical-align: bottom; margin-left:3px;\"
 			onclick=\"fifo_command('audio mic_toggle')\"
 			width=\"18\" height=\"28\">";
 		echo "<input type=\"image\" src=\"images/mic-up.png\"
-			style=\"vertical-align: bottom; margin-left:3px;\"
+			class=\"ui-button ui-widget ui-corner-all\"
+      style=\"vertical-align: bottom; margin-left:3px;\"
 			onclick=\"fifo_command('audio gain up')\"
 			width=\"18\" height=\"28\">";
 		echo "<input type=\"image\" src=\"images/mic-down.png\"
-			style=\"vertical-align: bottom; margin-left:3px;\"
+			class=\"ui-button ui-widget ui-corner-all\"
+      style=\"vertical-align: bottom; margin-left:3px;\"
 			onclick=\"fifo_command('audio gain down')\"
 			width=\"18\" height=\"28\">";
 		}
 	}
 ?>
-
+      <a href="logger/"><button class="ui-button ui-widget ui-corner-all ui-button-icon-only" title="Logger">
+        <span class="ui-icon ui-icon-gear"></span> Logger
+      </button></a>
       <input type="image" src="images/stop.png"
-		style="vertical-align: bottom; margin-left:20px; margin-right:0px;"
-        width="28" height="28"
-        onclick="fifo_command('record off')"
+      class="ui-button ui-widget ui-corner-all"
+      style="vertical-align: bottom; margin-left:20px; margin-right:0px;"
+      width="28" height="28"
+      onclick="fifo_command('record off')"
       >
       <input type="image" src="images/pause.png"
-		style="vertical-align: bottom; margin-left:0px; margin-right:0px;"
-        width="28" height="28"
-        onclick="fifo_command('pause')"
+      class="ui-button ui-widget ui-corner-all"
+      style="vertical-align: bottom; margin-left:0px; margin-right:0px;"
+      width="28" height="28"
+      onclick="fifo_command('pause')"
       >
       <input type="image" src="images/record.png"
-		style="vertical-align: bottom; margin-left:0px; margin-right:0px;"
-        width="28" height="28"
-        onclick="fifo_command('record on')"
+      class="ui-button ui-widget ui-corner-all"
+		  style="vertical-align: bottom; margin-left:0px; margin-right:0px;"
+      width="28" height="28"
+      onclick="fifo_command('record on')"
       >
       <input type="image" src="images/shutter.png"
-		style="vertical-align: bottom; margin-left:9px; margin-right:0px;"
-        width="28" height="28"
-        onclick="fifo_command('still')"
+      class="ui-button ui-widget ui-corner-all"
+		  style="vertical-align: bottom; margin-left:9px; margin-right:0px;"
+      width="28" height="28"
+      onclick="fifo_command('still')"
       >
 	  <input type="image" src="images/loop.png"
+    class="ui-button ui-widget ui-corner-all"
 		style="vertical-align: bottom; margin-left:9px; margin-right:0px;"
 		width="28" height="28"
 		onclick="fifo_command('loop toggle')"
@@ -185,17 +204,21 @@ else
 echo "<span style=\"margin-left:20px; color: $default_text_color\">Preset:</span>";
 
 echo "<input type='image' id='preset_up' src='images/arrow-up.png'
+    class=\"ui-button ui-widget ui-corner-all\"
 		style='margin-left:2px; vertical-align: bottom;'
 		onclick=\"fifo_command('preset next_settings')\">";
 echo "<input type='image' id='preset_down' src='images/arrow-down.png'
+    class=\"ui-button ui-widget ui-corner-all\"
 		style='margin-left:2px; vertical-align: bottom;'
 		onclick=\"fifo_command('preset prev_settings')\">";
 if ($servos_enable == "servos_on")
 	{
 	echo "<input type='image' id='preset_left' src='images/arrow-left.png'
+  class=\"ui-button ui-widget ui-corner-all\"
 			style='margin-left:2px; vertical-align: bottom;'
 			onclick=\"fifo_command('preset prev_position')\">";
 	echo "<input type='image' id='preset_right' src='images/arrow-right.png'
+  class=\"ui-button ui-widget ui-corner-all\"
 			style='margin-left:2px; vertical-align: bottom;'
 			onclick=\"fifo_command('preset next_position')\">";
 	}
@@ -251,21 +274,21 @@ else
 	$arch_type = "";
 
 echo "<a href=\"archive.php\"
-		class='btn-control'
+    class=\"ui-button ui-widget ui-corner-all\"
 		style='margin-right:20px;'>
 		$arch_type Archive Calendar</a>";
 
 echo "<span style=\"color: $default_text_color\"> Media:</span>";
 echo "<a href='media-archive.php?mode=media&type=videos'
-		class='btn-control'
+		class=\"ui-button ui-widget ui-corner-all\"
 		style='margin-left:2px;'
 		>Videos</a>";
 echo "<a href='media-archive.php?mode=media&type=stills'
-		class='btn-control'
+		class=\"ui-button ui-widget ui-corner-all\"
 		style='margin-left:2px; margin-right:8px;'
 		>Stills</a>";
 echo "<a href='media-archive.php?mode=loop&type=videos'
-		class='btn-control'
+		class=\"ui-button ui-widget ui-corner-all\"
 		style='margin-left:2px; margin-right:30px;'
 		>Loop</a>";
 echo "<span style=\"color: $default_text_color\"> Enable:</span>";
@@ -273,30 +296,28 @@ echo "<span style=\"color: $default_text_color\"> Enable:</span>";
 
       <input type="button" id="motion_button" value="Motion"
          onclick="fifo_command('motion_enable toggle')"
-         class="btn-control motion-control"
+         class="ui-button ui-widget ui-corner-all"
       >
       <?php echo "<span style=\"float: right; color: $default_text_color\"> Show:"; ?>
         <input type="button" id="regions_button" value="Preset"
 						onclick="fifo_command('motion show_regions toggle')"
-						class="btn-control motion-control"
+						class="ui-button ui-widget ui-corner-all"
 						>
         <input id="timelapse_button" type="button" value="Timelapse"
 						onclick="fifo_command('tl_show_status toggle')"
-						class="btn-control motion-control"
+						class="ui-button ui-widget ui-corner-all"
 						>
         <input type="button" id="vectors_button" value="Vectors"
 						onclick="fifo_command('motion show_vectors toggle')"
-						class="btn-control motion-control"
+						class="ui-button ui-widget ui-corner-all"
 						>
       </span>
     </div>
 
 <div id="container">
-
-    <div class="expandable-panel" id="cp-1">
-        <div class="expandable-panel-heading">
-            <h3>Setup<span class="icon-close-open"></span></h3>
-      </div>
+  <div id="accordion">
+      <h3>Setup<span class="icon-close-open"></span></h3>
+     
         <div class="expandable-panel-content">
               <table class="table-container">
                 <tr>
@@ -487,13 +508,10 @@ if ($servos_enable == "servos_on")
                 </tr>
               </table>
         </div>
-    </div>
 
 
-    <div class="expandable-panel" id="cp-2">
-        <div class="expandable-panel-heading">
             <h3>Motion Regions<span class="icon-close-open"></span></h3>
-      </div>
+
         <div class="expandable-panel-content">
 
               <table class="table-container">
@@ -632,14 +650,10 @@ if ($servos_enable == "servos_on")
                 </tr>
               </table>
         </div>
-    </div>
 
-
-     
-    <div class="expandable-panel" id="cp-3">
-        <div class="expandable-panel-heading">
+   
             <h3>System<span class="icon-close-open"></span></h3>
-      </div>
+
         <div class="expandable-panel-content text-center">
           <?php
             $version = VERSION;
@@ -691,6 +705,7 @@ if ($servos_enable == "servos_on")
           ?>
         </div>
     </div>
+
 <?php
 if (file_exists("custom.php"))
 	{

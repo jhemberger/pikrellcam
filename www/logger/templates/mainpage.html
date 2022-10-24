@@ -1,0 +1,40 @@
+<div class="container">
+	<div class="row">
+		<div class="span3">
+			<div class="well">
+				<h4>{T:TemperatureLabel}</h4>
+				<h1>{FormattedTemp}&deg;C</h1>
+				<p>24h average: {1dTempAvg}&deg;C</p>
+				<p>24h min: {1dTempMin}&deg;C</p>
+				<p>24h max: {1dTempMax}&deg;C</p>
+				<p>7d average: {7dTempAvg}&deg;C</p>
+				<p>7d min: {7dTempMin}&deg;C</p>
+				<p>7d max: {7dTempMax}&deg;C</p>
+			</div>
+			<div class="well">
+				<h4>{T:HumidityLabel}</h4>
+				<h1>{FormattedHumd}%</h1>
+				<p>24h average: {1dHumidityAvg}%</p>
+				<p>24h min: {1dHumidityMin}%</p>
+				<p>24h max: {1dHumidityMax}%</p>
+				<p>7d average: {7dHumidityAvg}%</p>
+				<p>7d min: {7dHumidityMin}%</p>
+				<p>7d max: {7dHumidityMax}%</p>
+			</div>
+		</div>
+		<div class="span9">
+			<div class="navbar">
+				<div class="navbar-inner">
+					<span class="brand">Show as:</span>
+					<ul class="nav">
+						<li class="{menu-active-chart}"><a href="?sensor={param:sensor}&type=chart">{T:Charts}</a></li>
+						<li class="{menu-active-table}"><a href="?sensor={param:sensor}&type=table">{T:Tables}</a></li>
+					</ul>
+				</div>
+			</div>
+			
+			{pageContent}
+			
+		</div>
+	</div>
+</div>
