@@ -19,6 +19,10 @@ October 2022
 - Introducing bootstrap for the logger dashboard
 - Added working support to the HDC1080 temperature and humidity sensor via Python and I2C interface
 
+## Logger Dashboard
+
+The very nice original PHP code from [raspberry_temperature_log](https://github.com/DzikuVx/raspberry_temperature_log) written by Paweł Spychalski has been adapted to be used within this project.
+
 ## Legacy Version
 
 PiKrellCam is an audio/video recording motion detect program with an OSD web
