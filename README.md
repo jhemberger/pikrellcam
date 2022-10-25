@@ -1,8 +1,6 @@
 # PiKrellCam Motion Detection with Sensor Data Logger
 
-Check the section [Legacy Version]() below for more information about the original repository of PikrellCam if you don't know yet about it.
-
-This fork introduces a logger web interface driven by a *sqlite* database to keep track of temperature and humidity.
+This fork introduces an additional web-dashboard driven by a *sqlite* database to keep track of temperature and humidity readings coming from a HDC1080 sensor. This dashboard is accessible by the main page of the camera preview bringing in some statistics of the collected data.
 
 ![SensorLogger](screenshots/logger_screenshot_01.jpg)
 
