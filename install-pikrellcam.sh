@@ -8,12 +8,11 @@ then
     exit 1
 fi
 
-bad_install()
-	{
+bad_install() {
 	echo "Cannot find $1 in $PWD"
 	echo "Are you running $PGM in the install directory?"
 	exit 1
-	}
+}
 
 if [ ! -x $PWD/pikrellcam ]
 then
@@ -124,7 +123,7 @@ PACKAGE_LIST=""
 if ((DEB_VERSION >= BUSTER))
 then
 	AV_PACKAGES="ffmpeg"
-	PHP_PACKAGES="php7.3 php7.3-common php7.3-fpm"
+	PHP_PACKAGES="php7.4 php7.4-common php7.4-fpm"
 elif ((DEB_VERSION >= STRETCH))
 then
 	AV_PACKAGES="libav-tools"
@@ -315,7 +314,7 @@ sudo sed -i "s|PIKRELLCAM_WWW|$PWD/www|; \
 
 if ((DEB_VERSION >= BUSTER))
 then
-	sudo sed -i "s/php5/php\/php7.3/" /etc/nginx/sites-available/pikrellcam
+	sudo sed -i "s/php5/php\/php7.4/" /etc/nginx/sites-available/pikrellcam
 elif ((DEB_VERSION >= STRETCH))
 then
 	sudo sed -i "s/php5/php\/php7.0/" /etc/nginx/sites-available/pikrellcam
