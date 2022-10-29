@@ -1,8 +1,15 @@
-# PiKrellCam Motion Detection with Sensor Data Logger
+# PiKrellCam Reborn! Motion Detection with Sensor Data Logger
+
+One of the most used motion detection and surveillance software for the Raspberry Pi.
+
+A WebUI overhaul is ongoing... as well as other nice changes (work in progress)!
+
+
+![Pikrellcam Reborn](screenshots/pikrellcam-ui-01.jpg)
+
 
 This fork introduces an additional web-dashboard driven by a *sqlite* database to keep track of temperature and humidity readings coming from a HDC1080 sensor. This dashboard is accessible by the main page of the camera preview bringing in some statistics of the collected data.
 
-A WebUI overhaul is ongoing... as much as other changes (work in progress)
 
 ![SensorLogger](screenshots/logger_screenshot_01.jpg)
 

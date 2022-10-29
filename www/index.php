@@ -1,87 +1,26 @@
-<script>
-var servo_mode = 0;
-
-var servo_left_array = [
-    "images/arrow0-left.png",
-    "images/arrow-left.png",
-    "images/arrow2-left.png"
-    ];
-
-var servo_right_array = [
-    "images/arrow0-right.png",
-    "images/arrow-right.png",
-    "images/arrow2-right.png"
-    ];
-
-var servo_up_array = [
-    "images/arrow0-up.png",
-    "images/arrow-up.png",
-    "images/arrow2-up.png"
-    ];
-
-var servo_down_array = [
-    "images/arrow0-down.png",
-    "images/arrow-down.png",
-    "images/arrow2-down.png"
-    ];
-
-function servo_move_mode() {
-    servo_mode += 1;
-    if (servo_mode > servo_left_array.length - 1) {
-        servo_mode = 0;
-    }
-    document.getElementById("servo_left").src = servo_left_array[servo_mode];
-    document.getElementById("servo_right").src = servo_right_array[servo_mode];
-    document.getElementById("servo_up").src = servo_up_array[servo_mode];
-    document.getElementById("servo_down").src = servo_down_array[servo_mode];
-}
-
-function servo_move_command(pan_tilt) {
-//  alert("motion " + move_mode +  " " + where);
-    fifo_command("servo " +  pan_tilt +  " " + servo_mode);
-}
-
-</script>
-
 <?php
-//ini_set('display_errors',1);
-//ini_set('display_startup_errors',1);
-//error_reporting(-1);
-
+	//ini_set('display_errors',1);
+	//ini_set('display_startup_errors',1);
+	//error_reporting(-1);
 
     require_once(dirname(__FILE__) . '/config.php');
     include_once(dirname(__FILE__) . '/config-user.php');
     include_once(dirname(__FILE__) . '/config-defaults.php');   
 
-function time_lapse_period() {
-    $tl_status = "../../.pikrellcam/timelapse.status";
-    $f = fopen($tl_status, 'r');
-    $tl_period = 1;
-    if ($f) {
-        $input = fgets($f);
-        $input = fgets($f);
-        sscanf($input, "%d", $tl_period);
-        fclose($f);
-    }
-    return $tl_period;
-}
-?>
-
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php echo TITLE_STRING; ?></title>
-  <link rel="stylesheet" href="js-css/bootstrap.min.css" />
-  <link rel="stylesheet" href="js-css/docs.css" />
-  <link rel="stylesheet" href="js-css/bootstrap-icons.css" />
-  <script src="js-css/jquery-3.6.1.min.js"></script>
-  <script src="js-css/pikrellcam.js"></script>
-</head>
-
-<?php
-    if (isset($_GET["hide_audio"])) {
+	function time_lapse_period() {
+		$tl_status = "../../.pikrellcam/timelapse.status";
+		$f = fopen($tl_status, 'r');
+		$tl_period = 1;
+		if ($f) {
+			$input = fgets($f);
+			$input = fgets($f);
+			sscanf($input, "%d", $tl_period);
+			fclose($f);
+		}
+		return $tl_period;
+	}
+	
+	if (isset($_GET["hide_audio"])) {
         $show_audio_controls = "no";
         config_user_save();
     }
@@ -96,93 +35,90 @@ function time_lapse_period() {
         $servos_enable = "servos_off";
 ?>
 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><?php echo TITLE_STRING; ?></title>
+  <link rel="stylesheet" href="js-css/bootstrap.min.css" />
+  <link rel="stylesheet" href="js-css/docs.css" />
+  <link rel="stylesheet" href="js-css/bootstrap-icons.css" />
+  <script src="js-css/jquery-3.6.1.min.js"></script>
+  <script src="js-css/pikrellcam.js"></script>
+</head>
 <body onload="mjpeg_start();">
 
-   <div class="container text-center">
-      <div class="text-shadow-large"><?php echo TITLE_STRING; ?></div>
-   </div>
-   <div class="container text-center">
-      <img id="mjpeg_image"
-      alt="No preview jpeg. Is pikrellcam running?  Click: System->Start"
-      style="margin:6px;"
-      onclick="image_expand_toggle();">
-   </div>
+	<div class="container text-center">
+		<div class="text-shadow-large"><?php echo TITLE_STRING; ?></div>
+	</div>
+	<div class="container text-center" data-toggle="tooltip" title="This is the camera live preview image, click to toggle zoom mode.">
+		<img id="mjpeg_image"
+		alt="No preview jpeg. Is pikrellcam running?  Click: System->Start"
+		style="margin:6px;"
+		onclick="image_expand_toggle();">
+	</div>
 
-   <div class="container text-center top-margin">
+	<div class="container text-center top-margin">
 
-<?php
-if (defined('SHOW_AUDIO_CONTROLS')) {
-    if ($show_audio_controls == "yes") {
-    ?>
-        <audio id="audio_fifo" controls src="audio_stream.php"
-              hidden="hidden" preload="none" type="audio/mpeg">
-              MP3 not supported </audio>
-              
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="audio_stop()">
-      <i class="bi bi-volume-mute"></i>
-      </button>
-              
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="audio_play()">
-      <i class="bi bi-voicemail"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('audio mic_toggle')">
-      <i class="bi bi-mic-mute-fill"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('audio gain up')">
-      <i class="bi bi-volume-up"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('audio gain down')">
-      <i class="bi bi-volume-down"></i>
-      </button>
-      
- <?php
-        }
-    }
-?>
-      <a href="logger/">
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" title="Logger">
-      <span class="bi bi-graph-down"></span> Logger
-      </button>
-      </a>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('record off')">
-      <i class="bi bi-stop-circle"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('pause')">
-      <i class="bi bi-pause-circle"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('record on')">
-      <i class="bi bi-record-circle"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('still')">
-      <i class="bi bi-camera"></i>
-      </button>
-      
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('loop toggle')">
-      <i class="bi bi-repeat"></i>
-      </button>
-      
+	<?php if (defined('SHOW_AUDIO_CONTROLS') && $show_audio_controls == "yes") { ?>
+		
+		<audio id="audio_fifo" controls src="audio_stream.php" hidden="hidden" preload="none" type="audio/mpeg"> MP3 not supported </audio>
+			  
+		<button class="btn btn-secondary" onclick="audio_stop()" data-toggle="tooltip" title="Disables audio monitoring and recording.">
+		<i class="bi bi-volume-mute"></i>
+		</button>
+	  
+		<button class="btn btn-secondary" onclick="audio_play()" data-toggle="tooltip" title="Enables audio monitoring and recording.">
+		<i class="bi bi-voicemail"></i>
+		</button>
 
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('preset next_settings')">
-      <span class="bi bi-arrow-up-circle">Next Preset</span>
-      </button>
+		<button class="btn btn-secondary" onclick="fifo_command('audio mic_toggle')" data-toggle="tooltip" title="Toggles the microphone audio on and off (mute).">
+		<i class="bi bi-mic-mute-fill"></i>
+		</button>
+
+		<button class="btn btn-secondary" onclick="fifo_command('audio gain up')" data-toggle="tooltip" title="Increases the audio gain.">
+		<i class="bi bi-volume-up"></i>
+		</button>
+
+		<button class="btn btn-secondary" onclick="fifo_command('audio gain down')" data-toggle="tooltip" title="Decreases the audio gain.">
+		<i class="bi bi-volume-down"></i>
+		</button>
       
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('preset prev_settings')">
-      <span class="bi bi-arrow-down-circle">Prev Preset</span>
-      </button>
+	<?php } ?>      
       
-      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('motion_enable toggle')">
-      <span class="bi bi-motherboard-fill">Motion</span>
-      </button>
+	<button class="btn btn-secondary" onclick="fifo_command('record off')" data-toggle="tooltip" title="Stops recording.">
+	<i class="bi bi-stop-circle"></i>
+	</button>
+
+	<button class="btn btn-secondary" onclick="fifo_command('pause')" data-toggle="tooltip" title="Pauses the recording.">
+	<i class="bi bi-pause-circle"></i>
+	</button>
+
+	<button class="btn btn-secondary" onclick="fifo_command('record on')" data-toggle="tooltip" title="Forces recording now.">
+	<i class="bi bi-record-circle"></i>
+	</button>
+
+	<button class="btn btn-secondary" onclick="fifo_command('still')" data-toggle="tooltip" title="Takes and stores a picture frame as image.">
+	<i class="bi bi-camera"></i>
+	</button>
+
+	<button class="btn btn-secondary" onclick="fifo_command('loop toggle')" data-toggle="tooltip" title="Toggles loop recording.">
+	<i class="bi bi-repeat"></i>
+	</button>
+
+
+	<button class="btn btn-secondary" onclick="fifo_command('preset next_settings')" data-toggle="tooltip" title="Switches to the next preset setting.">
+	<span class="bi bi-arrow-up-circle"></span>
+	</button>
+
+	<button class="btn btn-secondary" onclick="fifo_command('preset prev_settings')" data-toggle="tooltip" title="Switches to the previous preset setting.">
+	<span class="bi bi-arrow-down-circle"></span>
+	</button>
       
-<?php
-if ($servos_enable == "servos_on") {
+      
+      
+<?php if ($servos_enable == "servos_on") {
     echo "<input type='image' id='preset_left' src='images/arrow-left.png'
            class=\"ui-button ui-widget ui-corner-all\"
            style='margin-left:2px; vertical-align: bottom;'
@@ -211,10 +147,8 @@ if ($servos_enable == "servos_on") {
             onclick=\"servo_move_command('tilt_down')\">";
 }
 
-if (defined('INCLUDE_CONTROL')) {
-    if ($include_control == "yes") {
-        include 'control.php';
-    }
+if (defined('INCLUDE_CONTROL')&& $include_control == "yes") {
+	include 'control.php';
 }
 
 if (file_exists("custom-control.php")) {
@@ -225,7 +159,7 @@ if (file_exists("custom-control.php")) {
 
 </div>
 
-<div class="container top-margin">
+<div class="container mt-1 mb-1">
 
 <?php
 
@@ -239,50 +173,39 @@ else
     $arch_type = "";
 
 echo "<a href=\"archive.php\"
-    class=\"ui-button ui-widget ui-corner-all\"
+    class=\"btn btn-secondary\"
         style='margin-right:20px;'>
         $arch_type Archive Calendar</a>";
-
-echo "<span style=\"color: $default_text_color\"> Media:</span>";
-echo "<a href='media-archive.php?mode=media&type=videos'
-        class=\"ui-button ui-widget ui-corner-all\"
-        style='margin-left:2px;'
-        >Videos</a>";
-echo "<a href='media-archive.php?mode=media&type=stills'
-        class=\"ui-button ui-widget ui-corner-all\"
-        style='margin-left:2px; margin-right:8px;'
-        >Stills</a>";
-echo "<a href='media-archive.php?mode=loop&type=videos'
-        class=\"ui-button ui-widget ui-corner-all\"
-        style='margin-left:2px; margin-right:30px;'
-        >Loop</a>";
-echo "<span style=\"color: $default_text_color\"> Enable:</span>";
 ?>
 
-      <input type="button" id="motion_button" value="Motion"
-         onclick="fifo_command('motion_enable toggle')"
-         class="ui-button ui-widget ui-corner-all"
-      >
+	<a href="media-archive.php?mode=media&type=videos" class="btn btn-secondary" data-toggle="tooltip" title="Displays the archive of recorded videos.">Videos</a>
+	<a href="media-archive.php?mode=media&type=stills" class="btn btn-secondary" data-toggle="tooltip" title="Displays the archive of recorded still pictures.">Stills</a>
+	<a href="media-archive.php?mode=loop&type=videos" class="btn btn-secondary" data-toggle="tooltip" title="Displays the archive of recorded loops.">Loops</a>
+	<a href="logger/" class="btn btn-dark" data-toggle="tooltip" title="Displays the environmental sensors dashboard."><span class="bi bi-graph-down"></span>Sensor Logger</a>
       
-      <span style="float: right;"> Show:
-      
-        <input type="button" id="regions_button" value="Preset"
-                        onclick="fifo_command('motion show_regions toggle')"
-                        class="ui-button ui-widget ui-corner-all"
-                        >
-        <input id="timelapse_button" type="button" value="Timelapse"
-                        onclick="fifo_command('tl_show_status toggle')"
-                        class="ui-button ui-widget ui-corner-all"
-                        >
-        <input type="button" id="vectors_button" value="Vectors"
-                        onclick="fifo_command('motion show_vectors toggle')"
-                        class="ui-button ui-widget ui-corner-all"
-                        >
-      </span>
-      
-    </div>
+	<button class="btn btn-danger" onclick="fifo_command('motion_enable toggle')" data-toggle="tooltip" title="Toggles the motion detection function to automate recording according the configured motion region.">
+	<span class="bi bi-motherboard-fill">Motion Detection Toggle</span>
+	</button>
 
-<div class="container">
+	<span style="float: right;"> Show:
+
+		<button class="btn btn-primary" id="regions_button" onclick="fifo_command('motion show_regions toggle')" data-toggle="tooltip" title="Toggles the motion regions visibility.">
+		<span class="bi bi-motherboard-fill">Presets</span>
+		</button>
+
+		<button class="btn btn-primary" id="timelapse_button" onclick="fifo_command('tl_show_status toggle')" data-toggle="tooltip" title="Toggles the timelapse status visibility.">
+		<span class="bi bi-motherboard-fill">Timelapse</span>
+		</button>
+
+		<button class="btn btn-primary" id="vectors_button" onclick="fifo_command('motion show_vectors toggle')" data-toggle="tooltip" title="Toggles the motion vectors visibility.">
+		<span class="bi bi-motherboard-fill">Vectors</span>
+		</button>
+
+	</span>
+      
+</div>
+
+<div class="container mt-2">
   <div class="accordion" id="accordionExample">
     <div class="accordion-item">
       <h3 class="accordion-header" id="headingOne">
@@ -674,11 +597,5 @@ if ($servos_enable == "servos_on") {
 <?php if (file_exists("custom.php")) { include 'custom.php'; } ?>
 
 <script src="js-css/bootstrap.bundle.min.js"></script>
-<script>
-function toggledarkmode() {
-  var element = document.body;
-  element.classList.toggle("dark-mode");
-}
-</script>
 </body>
 </html>

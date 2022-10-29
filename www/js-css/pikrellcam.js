@@ -95,3 +95,48 @@ function fifo_command (cmd) {
 	fifo_cmd.send();
 }
 
+
+
+// servos
+var servo_mode = 0;
+
+var servo_left_array = [
+    "images/arrow0-left.png",
+    "images/arrow-left.png",
+    "images/arrow2-left.png"
+    ];
+
+var servo_right_array = [
+    "images/arrow0-right.png",
+    "images/arrow-right.png",
+    "images/arrow2-right.png"
+    ];
+
+var servo_up_array = [
+    "images/arrow0-up.png",
+    "images/arrow-up.png",
+    "images/arrow2-up.png"
+    ];
+
+var servo_down_array = [
+    "images/arrow0-down.png",
+    "images/arrow-down.png",
+    "images/arrow2-down.png"
+    ];
+
+function servo_move_mode() {
+    servo_mode += 1;
+    if (servo_mode > servo_left_array.length - 1) {
+        servo_mode = 0;
+    }
+    document.getElementById("servo_left").src = servo_left_array[servo_mode];
+    document.getElementById("servo_right").src = servo_right_array[servo_mode];
+    document.getElementById("servo_up").src = servo_up_array[servo_mode];
+    document.getElementById("servo_down").src = servo_down_array[servo_mode];
+}
+
+function servo_move_command(pan_tilt) {
+//  alert("motion " + move_mode +  " " + where);
+    fifo_command("servo " +  pan_tilt +  " " + servo_mode);
+}
+
