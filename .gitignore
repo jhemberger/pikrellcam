@@ -1,6 +1,14 @@
 scripts
 www/.htpasswd
 www/FIFO
+www/.FIFO.swp
+www/*.db
+www/archive
+www/loop
+www/media
+www/mjpeg.jpg
+www/state
+www/motion_detects_FIFO
 www/motion_events_FIFO
 www/audio_FIFO
 www/media
@@ -11,6 +19,7 @@ www/custom*
 www/custom.php
 www/user.php
 media
+
 
 
 ## Ignore Visual Studio temporary files, build results, and

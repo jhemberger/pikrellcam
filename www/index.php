@@ -1,52 +1,45 @@
 <script>
 var servo_mode = 0;
 
-var servo_left_array =
-	[
-	"images/arrow0-left.png",
-	"images/arrow-left.png",
-	"images/arrow2-left.png"
-	];
+var servo_left_array = [
+    "images/arrow0-left.png",
+    "images/arrow-left.png",
+    "images/arrow2-left.png"
+    ];
 
-var servo_right_array =
-	[
-	"images/arrow0-right.png",
-	"images/arrow-right.png",
-	"images/arrow2-right.png"
-	];
+var servo_right_array = [
+    "images/arrow0-right.png",
+    "images/arrow-right.png",
+    "images/arrow2-right.png"
+    ];
 
-var servo_up_array =
-	[
-	"images/arrow0-up.png",
-	"images/arrow-up.png",
-	"images/arrow2-up.png"
-	];
+var servo_up_array = [
+    "images/arrow0-up.png",
+    "images/arrow-up.png",
+    "images/arrow2-up.png"
+    ];
 
-var servo_down_array =
-	[
-	"images/arrow0-down.png",
-	"images/arrow-down.png",
-	"images/arrow2-down.png"
-	];
+var servo_down_array = [
+    "images/arrow0-down.png",
+    "images/arrow-down.png",
+    "images/arrow2-down.png"
+    ];
 
-function servo_move_mode()
-	{
-
-	servo_mode += 1;
-	if (servo_mode > servo_left_array.length - 1)
+function servo_move_mode() {
+    servo_mode += 1;
+    if (servo_mode > servo_left_array.length - 1) {
         servo_mode = 0;
+    }
+    document.getElementById("servo_left").src = servo_left_array[servo_mode];
+    document.getElementById("servo_right").src = servo_right_array[servo_mode];
+    document.getElementById("servo_up").src = servo_up_array[servo_mode];
+    document.getElementById("servo_down").src = servo_down_array[servo_mode];
+}
 
-	document.getElementById("servo_left").src = servo_left_array[servo_mode];
-	document.getElementById("servo_right").src = servo_right_array[servo_mode];
-	document.getElementById("servo_up").src = servo_up_array[servo_mode];
-	document.getElementById("servo_down").src = servo_down_array[servo_mode];
-	}
-
-function servo_move_command(pan_tilt)
-    {
+function servo_move_command(pan_tilt) {
 //  alert("motion " + move_mode +  " " + where);
     fifo_command("servo " +  pan_tilt +  " " + servo_mode);
-    }
+}
 
 </script>
 
@@ -56,241 +49,213 @@ function servo_move_command(pan_tilt)
 //error_reporting(-1);
 
 
-	require_once(dirname(__FILE__) . '/config.php');
-	include_once(dirname(__FILE__) . '/config-user.php');
-	include_once(dirname(__FILE__) . '/config-defaults.php');	
+    require_once(dirname(__FILE__) . '/config.php');
+    include_once(dirname(__FILE__) . '/config-user.php');
+    include_once(dirname(__FILE__) . '/config-defaults.php');   
 
-function time_lapse_period()
-	{
-	$tl_status = "../../.pikrellcam/timelapse.status";
-	$f = fopen($tl_status, 'r');
-	$tl_period = 1;
-	if ($f)
-		{
-		$input = fgets($f);
-		$input = fgets($f);
-		sscanf($input, "%d", $tl_period);
-		fclose($f);
-		}
-	return $tl_period;
-	}
+function time_lapse_period() {
+    $tl_status = "../../.pikrellcam/timelapse.status";
+    $f = fopen($tl_status, 'r');
+    $tl_period = 1;
+    if ($f) {
+        $input = fgets($f);
+        $input = fgets($f);
+        sscanf($input, "%d", $tl_period);
+        fclose($f);
+    }
+    return $tl_period;
+}
 ?>
 
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?php echo TITLE_STRING; ?></title>
-
-  <link rel="stylesheet" href="js-css/jquery-ui.theme.min.css" />
-  <link rel="stylesheet" href="js-css/pikrellcam.css" />
+  <link rel="stylesheet" href="js-css/bootstrap.min.css" />
+  <link rel="stylesheet" href="js-css/docs.css" />
+  <link rel="stylesheet" href="js-css/bootstrap-icons.css" />
   <script src="js-css/jquery-3.6.1.min.js"></script>
-  <script src="js-css/jquery-ui.min.js"></script>
   <script src="js-css/pikrellcam.js"></script>
-  <script>
-  $( function() {
-    $( "#accordion" ).accordion();
-  } );
-  </script>
 </head>
 
 <?php
-	if (isset($_GET["hide_audio"]))	{
-		$show_audio_controls = "no";
-		config_user_save();
-	}
-	if (isset($_GET["show_audio"])) {
-		$show_audio_controls = "yes";
-		config_user_save();
-	}
+    if (isset($_GET["hide_audio"])) {
+        $show_audio_controls = "no";
+        config_user_save();
+    }
+    if (isset($_GET["show_audio"])) {
+        $show_audio_controls = "yes";
+        config_user_save();
+    }
+    
+    if (defined('SERVOS_ENABLE'))
+        $servos_enable = SERVOS_ENABLE;
+    else
+        $servos_enable = "servos_off";
 ?>
 
 <body onload="mjpeg_start();">
-   <div class="text-center">
-   <div class="text-shadow-large">
-      <?php echo TITLE_STRING; ?>
+
+   <div class="container text-center">
+      <div class="text-shadow-large"><?php echo TITLE_STRING; ?></div>
    </div>
-   </div>
-   <div class="text-center">
-   <img id="mjpeg_image"
-          alt="No preview jpeg. Is pikrellcam running?  Click: System->Start"
-          style="border:4px groove silver;"
-          onclick="image_expand_toggle();">
+   <div class="container text-center">
+      <img id="mjpeg_image"
+      alt="No preview jpeg. Is pikrellcam running?  Click: System->Start"
+      style="margin:6px;"
+      onclick="image_expand_toggle();">
    </div>
 
-<div class="text-center top-margin">
+   <div class="container text-center top-margin">
 
 <?php
-if (defined('SHOW_AUDIO_CONTROLS'))
-	{
-	if ($show_audio_controls == "yes")
-		{
-		echo "<audio id=\"audio_fifo\" controls src=\"audio_stream.php\"
-			hidden=\"hidden\" preload=\"none\" type=\"audio/mpeg\" >
-			MP3 not supported </audio>";
-
-		echo "<input type=\"image\" src=\"images/audio-stop.png\"
-			class=\"ui-button ui-widget ui-corner-all\"
-      style=\"vertical-align: bottom; margin-left:3px;\"
-			onclick=\"audio_stop()\"
-			width=\"18\" height=\"28\">";
-		echo "<input type=\"image\" src=\"images/audio-play.png\"
-			class=\"ui-button ui-widget ui-corner-all\"
-      style=\"vertical-align: bottom; margin-left:3px;\"
-		  onclick=\"audio_play()\"
-			width=\"18\" height=\"28\">";
-		echo "<input type=\"image\" src=\"images/mic.png\"
-			class=\"ui-button ui-widget ui-corner-all\"
-      style=\"vertical-align: bottom; margin-left:3px;\"
-			onclick=\"fifo_command('audio mic_toggle')\"
-			width=\"18\" height=\"28\">";
-		echo "<input type=\"image\" src=\"images/mic-up.png\"
-			class=\"ui-button ui-widget ui-corner-all\"
-      style=\"vertical-align: bottom; margin-left:3px;\"
-			onclick=\"fifo_command('audio gain up')\"
-			width=\"18\" height=\"28\">";
-		echo "<input type=\"image\" src=\"images/mic-down.png\"
-			class=\"ui-button ui-widget ui-corner-all\"
-      style=\"vertical-align: bottom; margin-left:3px;\"
-			onclick=\"fifo_command('audio gain down')\"
-			width=\"18\" height=\"28\">";
-		}
-	}
+if (defined('SHOW_AUDIO_CONTROLS')) {
+    if ($show_audio_controls == "yes") {
+    ?>
+        <audio id="audio_fifo" controls src="audio_stream.php"
+              hidden="hidden" preload="none" type="audio/mpeg">
+              MP3 not supported </audio>
+              
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="audio_stop()">
+      <i class="bi bi-volume-mute"></i>
+      </button>
+              
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="audio_play()">
+      <i class="bi bi-voicemail"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('audio mic_toggle')">
+      <i class="bi bi-mic-mute-fill"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('audio gain up')">
+      <i class="bi bi-volume-up"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('audio gain down')">
+      <i class="bi bi-volume-down"></i>
+      </button>
+      
+ <?php
+        }
+    }
 ?>
-      <a href="logger/"><button class="ui-button ui-widget ui-corner-all ui-button-icon-only" title="Logger">
-        <span class="ui-icon ui-icon-gear"></span> Logger
-      </button></a>
-      <input type="image" src="images/stop.png"
-      class="ui-button ui-widget ui-corner-all"
-      style="vertical-align: bottom; margin-left:20px; margin-right:0px;"
-      width="28" height="28"
-      onclick="fifo_command('record off')"
-      >
-      <input type="image" src="images/pause.png"
-      class="ui-button ui-widget ui-corner-all"
-      style="vertical-align: bottom; margin-left:0px; margin-right:0px;"
-      width="28" height="28"
-      onclick="fifo_command('pause')"
-      >
-      <input type="image" src="images/record.png"
-      class="ui-button ui-widget ui-corner-all"
-		  style="vertical-align: bottom; margin-left:0px; margin-right:0px;"
-      width="28" height="28"
-      onclick="fifo_command('record on')"
-      >
-      <input type="image" src="images/shutter.png"
-      class="ui-button ui-widget ui-corner-all"
-		  style="vertical-align: bottom; margin-left:9px; margin-right:0px;"
-      width="28" height="28"
-      onclick="fifo_command('still')"
-      >
-	  <input type="image" src="images/loop.png"
-    class="ui-button ui-widget ui-corner-all"
-		style="vertical-align: bottom; margin-left:9px; margin-right:0px;"
-		width="28" height="28"
-		onclick="fifo_command('loop toggle')"
-	  >
+      <a href="logger/">
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" title="Logger">
+      <span class="bi bi-graph-down"></span> Logger
+      </button>
+      </a>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('record off')">
+      <i class="bi bi-stop-circle"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('pause')">
+      <i class="bi bi-pause-circle"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('record on')">
+      <i class="bi bi-record-circle"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('still')">
+      <i class="bi bi-camera"></i>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('loop toggle')">
+      <i class="bi bi-repeat"></i>
+      </button>
+      
+
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('preset next_settings')">
+      <span class="bi bi-arrow-up-circle">Next Preset</span>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('preset prev_settings')">
+      <span class="bi bi-arrow-down-circle">Prev Preset</span>
+      </button>
+      
+      <button class="ui-button ui-widget ui-corner-all ui-button-icon-only" onclick="fifo_command('motion_enable toggle')">
+      <span class="bi bi-motherboard-fill">Motion</span>
+      </button>
+      
+<?php
+if ($servos_enable == "servos_on") {
+    echo "<input type='image' id='preset_left' src='images/arrow-left.png'
+           class=\"ui-button ui-widget ui-corner-all\"
+           style='margin-left:2px; vertical-align: bottom;'
+           onclick=\"fifo_command('preset prev_position')\">";
+    echo "<input type='image' id='preset_right' src='images/arrow-right.png'
+           class=\"ui-button ui-widget ui-corner-all\"
+           style='margin-left:2px; vertical-align: bottom;'
+           onclick=\"fifo_command('preset next_position')\">";
+    echo "<input id='servo_move_mode' type='button' value=\"Servo:\"
+            class=\"btn-control\"
+            style=\"cursor: pointer;
+            background: rgba(0, 0, 0, 0.08);
+            color: $default_text_color; margin-left:20px; padding-left:2px; padding-right:0px;\"
+            onclick='servo_move_mode();'>";
+    echo "<input type='image' id='servo_left' src='images/arrow0-left.png'
+            style='margin-left:2px; vertical-align: bottom;'
+            onclick=\"servo_move_command('pan_left')\">";
+    echo "<input type='image' id='servo_right' src='images/arrow0-right.png'
+            style='margin-left:2px; vertical-align: bottom;'
+            onclick=\"servo_move_command('pan_right')\">";
+    echo "<input type='image' id='servo_up' src='images/arrow0-up.png'
+            style='margin-left:2px; vertical-align: bottom;'
+            onclick=\"servo_move_command('tilt_up')\">";
+    echo "<input type='image' id='servo_down' src='images/arrow0-down.png'
+            style='margin-left:2px; vertical-align: bottom;'
+            onclick=\"servo_move_command('tilt_down')\">";
+}
+
+if (defined('INCLUDE_CONTROL')) {
+    if ($include_control == "yes") {
+        include 'control.php';
+    }
+}
+
+if (file_exists("custom-control.php")) {
+    include 'custom-control.php';
+}
+
+?>
+
+</div>
+
+<div class="container top-margin">
 
 <?php
-
-if (defined('SERVOS_ENABLE'))
-	$servos_enable = SERVOS_ENABLE;
-else
-	$servos_enable = "servos_off";
-
-
-echo "<span style=\"margin-left:20px; color: $default_text_color\">Preset:</span>";
-
-echo "<input type='image' id='preset_up' src='images/arrow-up.png'
-    class=\"ui-button ui-widget ui-corner-all\"
-		style='margin-left:2px; vertical-align: bottom;'
-		onclick=\"fifo_command('preset next_settings')\">";
-echo "<input type='image' id='preset_down' src='images/arrow-down.png'
-    class=\"ui-button ui-widget ui-corner-all\"
-		style='margin-left:2px; vertical-align: bottom;'
-		onclick=\"fifo_command('preset prev_settings')\">";
-if ($servos_enable == "servos_on")
-	{
-	echo "<input type='image' id='preset_left' src='images/arrow-left.png'
-  class=\"ui-button ui-widget ui-corner-all\"
-			style='margin-left:2px; vertical-align: bottom;'
-			onclick=\"fifo_command('preset prev_position')\">";
-	echo "<input type='image' id='preset_right' src='images/arrow-right.png'
-  class=\"ui-button ui-widget ui-corner-all\"
-			style='margin-left:2px; vertical-align: bottom;'
-			onclick=\"fifo_command('preset next_position')\">";
-	}
-
-if ($servos_enable == "servos_on")
-	{
-//	echo "<span style=\"margin-left:20px; color: $default_text_color\">Servo:</span>";
-//			background: rgba(255, 255, 255, 0.16);
-	echo "<input id='servo_move_mode' type='button' value=\"Servo:\"
-			class=\"btn-control\"
-			style=\"cursor: pointer;
-			background: rgba(0, 0, 0, 0.08);
-			color: $default_text_color; margin-left:20px; padding-left:2px; padding-right:0px;\"
-			onclick='servo_move_mode();'>";
-	echo "<input type='image' id='servo_left' src='images/arrow0-left.png'
-			style='margin-left:2px; vertical-align: bottom;'
-			onclick=\"servo_move_command('pan_left')\">";
-	echo "<input type='image' id='servo_right' src='images/arrow0-right.png'
-			style='margin-left:2px; vertical-align: bottom;'
-			onclick=\"servo_move_command('pan_right')\">";
-	echo "<input type='image' id='servo_up' src='images/arrow0-up.png'
-			style='margin-left:2px; vertical-align: bottom;'
-			onclick=\"servo_move_command('tilt_up')\">";
-	echo "<input type='image' id='servo_down' src='images/arrow0-down.png'
-			style='margin-left:2px; vertical-align: bottom;'
-			onclick=\"servo_move_command('tilt_down')\">";
-	}
-
-if (defined('INCLUDE_CONTROL'))
-	{
-	if ($include_control == "yes")
-		{
-		include 'control.php';
-		}
-	}
-
-if (file_exists("custom-control.php"))
-	{
-	include 'custom-control.php';
-	}
-
-echo "</div>";
-
-echo "<div id='container' class='top-margin'>";
 
 $archive_root = ARCHIVE_DIR;
 $fs_type = exec("stat -f -L -c %T $archive_root");
 if ("$fs_type" == "nfs")
-	$arch_type = "NFS";
+    $arch_type = "NFS";
 else if (strpos($fs_type, 'Stale') !== false)
-	$arch_type = "Stale";
+    $arch_type = "Stale";
 else
-	$arch_type = "";
+    $arch_type = "";
 
 echo "<a href=\"archive.php\"
     class=\"ui-button ui-widget ui-corner-all\"
-		style='margin-right:20px;'>
-		$arch_type Archive Calendar</a>";
+        style='margin-right:20px;'>
+        $arch_type Archive Calendar</a>";
 
 echo "<span style=\"color: $default_text_color\"> Media:</span>";
 echo "<a href='media-archive.php?mode=media&type=videos'
-		class=\"ui-button ui-widget ui-corner-all\"
-		style='margin-left:2px;'
-		>Videos</a>";
+        class=\"ui-button ui-widget ui-corner-all\"
+        style='margin-left:2px;'
+        >Videos</a>";
 echo "<a href='media-archive.php?mode=media&type=stills'
-		class=\"ui-button ui-widget ui-corner-all\"
-		style='margin-left:2px; margin-right:8px;'
-		>Stills</a>";
+        class=\"ui-button ui-widget ui-corner-all\"
+        style='margin-left:2px; margin-right:8px;'
+        >Stills</a>";
 echo "<a href='media-archive.php?mode=loop&type=videos'
-		class=\"ui-button ui-widget ui-corner-all\"
-		style='margin-left:2px; margin-right:30px;'
-		>Loop</a>";
+        class=\"ui-button ui-widget ui-corner-all\"
+        style='margin-left:2px; margin-right:30px;'
+        >Loop</a>";
 echo "<span style=\"color: $default_text_color\"> Enable:</span>";
 ?>
 
@@ -298,73 +263,67 @@ echo "<span style=\"color: $default_text_color\"> Enable:</span>";
          onclick="fifo_command('motion_enable toggle')"
          class="ui-button ui-widget ui-corner-all"
       >
-      <?php echo "<span style=\"float: right; color: $default_text_color\"> Show:"; ?>
+      
+      <span style="float: right;"> Show:
+      
         <input type="button" id="regions_button" value="Preset"
-						onclick="fifo_command('motion show_regions toggle')"
-						class="ui-button ui-widget ui-corner-all"
-						>
+                        onclick="fifo_command('motion show_regions toggle')"
+                        class="ui-button ui-widget ui-corner-all"
+                        >
         <input id="timelapse_button" type="button" value="Timelapse"
-						onclick="fifo_command('tl_show_status toggle')"
-						class="ui-button ui-widget ui-corner-all"
-						>
+                        onclick="fifo_command('tl_show_status toggle')"
+                        class="ui-button ui-widget ui-corner-all"
+                        >
         <input type="button" id="vectors_button" value="Vectors"
-						onclick="fifo_command('motion show_vectors toggle')"
-						class="ui-button ui-widget ui-corner-all"
-						>
+                        onclick="fifo_command('motion show_vectors toggle')"
+                        class="ui-button ui-widget ui-corner-all"
+                        >
       </span>
+      
     </div>
 
-<div id="container">
-  <div id="accordion">
-      <h3>Setup<span class="icon-close-open"></span></h3>
-     
-        <div class="expandable-panel-content">
-              <table class="table-container">
+<div class="container">
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        SETUP
+      </button>
+      </h3>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <table class="table-container">
                 <tr>
                   <td style="border: 0;" align="right">
-                    <input type="image" src="images/arrow2-left.png"
-                      style="padding:0px 0px 0px 0px; margin:0;"
-                      onclick="fifo_command('display <<');"
-                    >
-                    <input type="image" src="images/arrow-left.png"
-                      style="padding:0px 0px 0px 0px; margin:0;"
-                      onclick="fifo_command('display <');"
-                    >
-                  </td>
-                  <td style="border: 0;" align="center">
-                    <input type="button" value="SEL"
-                      class="btn-control"
-                      onclick="fifo_command('display sel');"
-                    >
-                  </td>
-                  <td style="border: 0;" align="left">
-                    <input type="image" src="images/arrow-right.png"
-                      style="padding:0px 0px 0px 0px; margin:0;"
-                      onclick="fifo_command('display >');"
-                    >
-                    <input type="image" src="images/arrow2-right.png"
-                      style="padding:0px 0px 0px 0px; margin:0;"
-                      onclick="fifo_command('display >>');"
-                    >
-                  </td>
-                </tr>
-
-                <tr>
-                  <td style="border: 0;" align="right" >
-                  </td>
-                  <td style="border: 0;" align="center">
-                    <input type="button" value="Back"
-                      onclick="fifo_command('display back');"
-                      class="btn-control"
-                    >
-                  </td>
-                  <td style="border: 0;" align="left" >
+                 
+                  <button type="button" class="btn btn-primary" onclick="fifo_command('display <<');">
+                  <i class="bi bi-arrow-bar-left"></i>
+                  </button>
+                    
+                  <button type="button" class="btn btn-primary" onclick="fifo_command('display <');">
+                  <i class="bi bi-arrow-left"></i>
+                  </button>
+                       
+                  <button type="button" class="btn btn-primary" onclick="fifo_command('display sel');">
+                  SEL
+                  </button>                               
+                  
+                  <button type="button" class="btn btn-primary" onclick="fifo_command('display >');">
+                  <i class="bi bi-arrow-right"></i>
+                  </button>
+                  
+                  <button type="button" class="btn btn-primary" onclick="fifo_command('display >>');">
+                  <i class="bi bi-arrow-bar-right"></i>
+                  </button>
+                  
+                  <button type="button" class="btn btn-primary" onclick="fifo_command('display back');">
+                  <i class="bi bi-backspace-fill"></i>
+                  </button>
+                  
                   </td>
                 </tr>
               </table>
-
-
-              <table class="table-container">
+          <table class="table-container">
                 <tr>
                   <td>
                     <?php echo "<span style=\"font-weight:600; color: $default_text_color\">Preset</span>"; ?>
@@ -375,35 +334,33 @@ echo "<span style=\"color: $default_text_color\"> Enable:</span>";
                         onclick="fifo_command('display motion_limit');"
                       >
 
-					<?php
-					if ($servos_enable == "servos_on")
-						{
-						echo "<span style=\"margin-left:20px; margin-right:0px; color: $default_text_color\">Move:";
-						echo "<input type='button' value='One'
-							class='btn-menu'
-							style='margin-left:2px; margin-right:0px;'
-							onclick=\"fifo_command('preset move_one')\">";
-						echo "<input type='button' value='All'
-							class='btn-menu'
-							style='margin-left:4px;'
-							onclick=\"fifo_command('preset move_all')\">";
-						}
-					?>
+                    <?php
+                    if ($servos_enable == "servos_on") {
+                        echo "<span style=\"margin-left:20px; margin-right:0px; color: $default_text_color\">Move:";
+                        echo "<input type='button' value='One'
+                            class='btn-menu'
+                            style='margin-left:2px; margin-right:0px;'
+                            onclick=\"fifo_command('preset move_one')\">";
+                        echo "<input type='button' value='All'
+                            class='btn-menu'
+                            style='margin-left:4px;'
+                            onclick=\"fifo_command('preset move_all')\">";
+                        }
+                    ?>
 
                       <input type="button" value="New"
                         class="btn-menu"
                         style="float: right; margin-left:6px"
                         onclick="fifo_command('preset new');"
                       >
-					<?php
-					if ($servos_enable == "servos_on")
-						{
-						echo "<input type='button' value='Copy'
+                    <?php
+                    if ($servos_enable == "servos_on") {
+                        echo "<input type='button' value='Copy'
                         class='btn-menu'
                         style='float: right; margin-left:6px'
-						onclick=\"fifo_command('preset copy')\">";
-						}
-					?>
+                        onclick=\"fifo_command('preset copy')\">";
+                        }
+                    ?>
                       <input type="button" value="Del"
                         class="btn-menu alert-control"
                         style="float: right;margin-left:20px"
@@ -468,12 +425,10 @@ echo "<span style=\"color: $default_text_color\"> Enable:</span>";
                         onclick="fifo_command('display audio_settings');"
                       >
 <?php
-if ($servos_enable == "servos_on")
-	{
-	echo "<input type='button' value='Servo'
-			class='btn-menu'
-			onclick=\"fifo_command('display servo_settings')\">";
-	}
+if ($servos_enable == "servos_on") {
+    echo "<input type='button' value='Servo' class='btn-menu'
+            onclick=\"fifo_command('display servo_settings')\">";
+    }
 ?>
                     </div>
                   </td>
@@ -508,12 +463,16 @@ if ($servos_enable == "servos_on")
                 </tr>
               </table>
         </div>
-
-
-            <h3>Motion Regions<span class="icon-close-open"></span></h3>
-
-        <div class="expandable-panel-content">
-
+      </div>
+    </div>
+    <div class="accordion-item">
+    <h3 class="accordion-header" id="headingTwo">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+        Motion Regions
+      </button>
+    </h3>
+    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
               <table class="table-container">
                 <tr>
                   <td>
@@ -649,14 +608,18 @@ if ($servos_enable == "servos_on")
                   </td>
                 </tr>
               </table>
-        </div>
-
-   
-            <h3>System<span class="icon-close-open"></span></h3>
-
-        <div class="expandable-panel-content text-center">
-          <?php
-            $version = VERSION;
+      </div>
+    </div>
+  </div>
+    <div class="accordion-item">
+    <h3 class="accordion-header" id="headingThree">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+        System
+      </button>
+    </h3>
+    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+		<?php $version = VERSION;
             echo "<span style=\"font-weight:600; color: $default_text_color\">
              PiKrellCam V${version}: </span>";
           ?>
@@ -696,22 +659,26 @@ if ($servos_enable == "servos_on")
             class="btn-control alert-control"
           >
           <?php
-			echo "<span style='float:right;'>";
-			if ("$show_audio_controls" == "yes")
-				echo "<a href='index.php?hide_audio'>Hide Audio</a>";
-			else
-				echo "<a href='index.php?show_audio'>Show Audio</a>";
-			echo "</span>";
+            echo "<span style='float:right;'>";
+            if ("$show_audio_controls" == "yes")
+                echo "<a href='index.php?hide_audio'>Hide Audio</a>";
+            else
+                echo "<a href='index.php?show_audio'>Show Audio</a>";
+            echo "</span>";
           ?>
-        </div>
+      </div>
     </div>
-
-<?php
-if (file_exists("custom.php"))
-	{
-	include 'custom.php';
-	}
-?>
+  </div> 
+  </div>
 </div>
+<?php if (file_exists("custom.php")) { include 'custom.php'; } ?>
+
+<script src="js-css/bootstrap.bundle.min.js"></script>
+<script>
+function toggledarkmode() {
+  var element = document.body;
+  element.classList.toggle("dark-mode");
+}
+</script>
 </body>
 </html>
